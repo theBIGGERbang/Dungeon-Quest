@@ -1,62 +1,240 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import sys
+from time import sleep as wait
+from random import randint as rand
+################################################################################
+maxhealth=20
+health=20
+level=1
+attack=5
+accuracy=8
+exp=0
+scsize=39
+weapon='wooden sword'
+ogre=['Ogre',10,2,5,'A simple enemy, however is not to be toyed with',14]
+'''
+monster=[name,health,attack,accuracy,flavor,exp]
+           0     1     2      3        4     5
+'''
+################################################################################
+#health=...
+#level =...
+#exp to next level=
+def clear(exc):
+    global scsize
+    for n in range(scsize-exc):
+        print()
+def printt():
+    print('###############\n#DUNGEON QUEST#\n###############')
+def noline(text):
+    sys.stdout.write(text)
+def dot(n):
+    typetext('... ',n)
+def typetext(text,time):
+    for n in text:
+        noline(n)
+        wait(time)
+    print()
+def chartext(name,text):
+    noline(name+': ')
+    for n in text:
+        noline(n)
+        wait(0.03)
+def dia(text):
+    typetext(text,.03)
+def levelup():
+    global exp
+    global level
+    global maxhealth
+    global attack
+    global health
+    if exp>=100:
+        level+=1
+        print()
+        typetext('You leveled up! \nYou are now level ' + str(level),0.03)
+        exp-=100
+        print(str(100-exp)+' exp remaining to level ' + str(level+1))
+        maxhealth+=4
+        attack+=1
+        health=maxhealth
+        getstat()
+        
+def getstat():
+    print('Player stats:')
+    print('[')
+    print("    Health = "+str(health))
+    print("    Level  = "+str(level))
+    print('    Attack = ' +str(attack))
+    print("    You need " + str(100-exp)+' exp to level '+str(level+1))
+    print("    Current weapon: "+weapon)
+    print(']')
+def choices():
+    print('1: Attack\n2: Spell\n3: Info')
 
-# C extensions
-*.so
+def variation():
+    return rand(-1,1)
+def landed(acc):
+    if rand(0,10)<=acc:
+        return True
+    else:
+        return False
+def weapon_text(weapon):
+    if weapon=='wooden sword':
+        dia('You attacked with your weak sword')
+    elif weapon=='fireball':
+        dia('You threw a fireball at the enemy')
+    else:
+        dia('You hit them')
+def fight(enemy):
+    global exp
+    global health
+    cm=[]
+    dia(enemy[0]+' attacked you!')
+    for n in enemy:
+        cm.append(n)
+    dia(cm[0]+' has '+str(cm[1])+' health')
+    while cm[1] >0:
+        try:
+            lnd=landed(accuracy)
+            choices()
+            atk=int(input())
+            if atk==1:
+                clear(0)
+                weapon_text(weapon)
+                wait(0.5)
+                if lnd==True:
+                    dmgdelt=attack+variation()
+                    cm[1]-=dmgdelt
+                    if cm[1]<=0:
+                        break
+                    else:
+                        wait(.7)
+                        dia('You did '+str(dmgdelt)+' damage')
+                        
+                elif lnd==False:
+                    typetext('But your attack missed!',0.03)
+                    wait(.7)
+                    
+            if atk==2:
+                lnd=landed(accuracy-3)
+                clear(0)
+                weapon_text('fireball')
+                wait(0.5)
+                if lnd==True:
+                    dmgdelt=attack+2
+                    dia('You delt '+str(dmgdelt)+' damage')
+                    cm[1]-=dmgdelt
+                else:
+                    dia('But it missed')
+                if cm[1]<=0:
+                    break
+            if atk==3:
+                clear(0)
+                dia(cm[4])
+                wait(1)
+                print(cm[0]+' stats:')
+                print('[')
+                print("    Health = "+str(cm[1]))
+                print("    Accuracy  = "+str(cm[3]))
+                print('    Attack = ' +str(cm[2]))
+                print(']')    
+        except:
+            clear(0)
+            dia('Enter a valid number')
+        dia(cm[0]+' has '+str(cm[1])+' health remaining')
+        dia(cm[0]+' attacked')
+        wait(1)
+        enlnd=landed(cm[3])
+        if enlnd==True:
+            endmg=cm[2]+rand(-1,1)
+            dia('Did '+str(endmg)+' damage')
+            health-=endmg
+            if health<=0:
+                dia('You ran out of health...')
+                sys.exit('You died')                
+            dia(str(health) +' health remaining')
+        else:
+            dia('But it missed!')
+        
+    clear(0)
+    dia(cm[0]+' has been defeated!')
+    newexp=cm[5]+rand(-2,3)
+    dia('You got ' +str(newexp)+' exp')
+    exp+=newexp
+    levelup()
+    getstat()
+    wait(4)
+    clear(0)
+################################################################################
+clear(0)
+noline('          ')
+for n in range(15):
+    sys.stdout.write('#')
+    wait(0.03)
+title="#DUNGEON QUEST#"
 
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-.hypothesis/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-#Ipython Notebook
-.ipynb_checkpoints
+sys.stdout.write('\n')
+noline('          ')
+for n in title:
+    sys.stdout.write(n)
+    wait(0.04)
+print()
+noline('          ')
+for n in range(15):
+    sys.stdout.write('#')
+    wait(0.03)
+wait(1)
+print()
+typetext('Type help for instructions or start to begin',.02)
+start=input()
+################################################################################
+if start.lower() == 'help':
+    printt()
+    print()
+    print('Welcome to Dungeon quest help:')
+    print('type settings to access settings')
+    print('use number keys to select commands and press enter to confirm.')
+    print()
+    choices()
+    print()
+    print('1: Attack the enemy with your weapon\n2: Cast a spell at the enemy\n3: Get info on the enemy')
+    print('An attack is a basic move, a spell is a boosted magical attack with \nless accuracy, and info just gives you information')
+    clear(18)
+    start=input('type start to begin\n')
+if start.lower()=='settings':
+    scsize=int(input('Please enter your screen size\n'))
+    start='start'
+if start.lower()=='start':
+    clear(0)
+    dot(.1)
+    typetext('huh... where am I?',.1)
+    dia('You stand up in a clearing, some sort of forest.')
+    wait(1)
+    dia('As you start to stand up you hear a rustle coming from your left')
+    wait(1)
+    dot(.1)
+    wait(1)
+    typetext('You were attacked!',.02)
+    wait(1.5)
+    clear(0)
+    start='tut'
+if start=='tut':
+    fight(ogre)
+    start='tutover'
+if start=='tutover':
+    chartext('Mysterious Voice','Hello? are you ok?')
+    wait(1)
+    print()
+    noline('                  ')
+    dia('Here let me heal you.')
+    wait(1)
+    health=maxhealth
+    dia('You were fully healed')
+    wait(1)
+    chartext('Mysterious Voice','Careful in the forest, there are monsters everywhere.')
+    wait(1)
+    print()
+    noline('                  ')
+    dia('Oh by the way, my name is Ted Cruz')
+    wait(1)
+    chartext('Ted Cruz','Ever since Donald Trump has become our president, the whole world has gone to waste.')
+    
